@@ -49,10 +49,10 @@ sudo wget https://ftp.gnu.org/gnu/mpfr/mpfr-4.0.2.tar.xz
 
 sudo mv mpfr-4.0.2.tar.xz /mnt/LFS/LFSSourceArchives/9.0/SYSTEM/
 
-sudo git clone https://github.com/balaspidy/LFS.git
+sudo https://github.com/chinnadas/LFSPkgMain.git
 
 sleep 5
-cd $bbb
+cd LFSPkgMain
 sudo cp BuildTools-SystemD $LFS/LFSScripts
 sudo cp  system-meta.LFSBuild /mnt/LFS/LFSPkgBuildScripts/system/system-meta/system-systemd-meta.LFSBuild
 sudo chmod 777 /mnt/LFS/LFSPkgBuildScripts/system/system-meta/system-systemd-meta.LFSBuild
