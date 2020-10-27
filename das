@@ -45,11 +45,7 @@ cd LFSScripts
 
 rm -rf BuildTools-SystemD
 
-sudo wget https://ftp.gnu.org/gnu/mpfr/mpfr-4.0.2.tar.xz
-
-sudo mv mpfr-4.0.2.tar.xz /mnt/LFS/LFSSourceArchives/9.0/SYSTEM/
-
-sudo https://github.com/chinnadas/LFSPkgMain.git
+sudo git clone https://github.com/chinnadas/LFSPkgMain.git
 
 sleep 5
 cd LFSPkgMain
@@ -64,7 +60,13 @@ sudo chmod 755 BuildTools-SystemD
 sleep 3
 echo "=================Building Tools for Systemd============"
 echo "=================Stage 1======================="
+
+sudo wget https://ftp.gnu.org/gnu/mpfr/mpfr-4.0.2.tar.xz
+
+sudo mv mpfr-4.0.2.tar.xz /mnt/LFS/LFSSourceArchives/9.0/SYSTEM/
+
 ./BuildTools-SystemD
+
 
 sleep 5
 
@@ -75,6 +77,7 @@ if [ "X$EXTFOLDER" != "X" ];then
 	sudo mount --bind $EXTFOLDER/${BUILTPACKAGES} $LFS/${BUILTPACKAGES}
 	sudo mount --bind $EXTFOLDER/${SOURCEARCHIVES} $LFS/${SOURCEARCHIVES}
 fi
+
 
 
 sudo ./BuildFileSystem-SystemD
