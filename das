@@ -131,7 +131,6 @@ install-info --dir-file=/usr/share/info/dir           \
              /usr/share/info/gpm.info                 &&
 ln -sfv libgpm.so.2.1.0 /usr/lib/libgpm.so            &&
 install -v -m644 conf/gpm-root.conf /etc              &&
-
 install -v -m755 -d /usr/share/doc/gpm-1.20.7/support &&
 install -v -m644    doc/support/*                     \
                     /usr/share/doc/gpm-1.20.7/support &&
