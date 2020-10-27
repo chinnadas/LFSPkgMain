@@ -61,9 +61,7 @@ sleep 3
 echo "=================Building Tools for Systemd============"
 echo "=================Stage 1======================="
 
-sudo wget https://ftp.gnu.org/gnu/mpfr/mpfr-4.0.2.tar.xz
 
-sudo mv mpfr-4.0.2.tar.xz /mnt/LFS/LFSSourceArchives/9.0/SYSTEM/
 
 ./BuildTools-SystemD
 
@@ -78,7 +76,9 @@ if [ "X$EXTFOLDER" != "X" ];then
 	sudo mount --bind $EXTFOLDER/${SOURCEARCHIVES} $LFS/${SOURCEARCHIVES}
 fi
 
+sudo wget https://ftp.gnu.org/gnu/mpfr/mpfr-4.0.2.tar.xz
 
+sudo mv mpfr-4.0.2.tar.xz /mnt/LFS/LFSSourceArchives/9.0/SYSTEM/
 
 sudo ./BuildFileSystem-SystemD
 
