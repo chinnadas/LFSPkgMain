@@ -45,6 +45,10 @@ cd LFSScripts
 
 rm -rf BuildTools-SystemD
 
+sudo wget https://ftp.gnu.org/gnu/mpfr/mpfr-4.0.2.tar.xz
+
+sudo mv mpfr-4.0.2.tar.xz /mnt/LFS/LFSSourceArchives/9.0/SYSTEM/
+
 sudo git clone https://github.com/balaspidy/LFS.git
 sleep 5
 cd $bbb
