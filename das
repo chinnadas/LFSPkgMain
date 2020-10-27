@@ -91,12 +91,14 @@ ln -sv ../SYSTEM/linux-$KERNELVERSION.tar.xz .
 cd $LFS/LFSPkgBuildScripts/admin/LFSPkg
 wget -c --no-check-certificate "https://github.com/KeithDHedger/LFSPkg/archive/master.zip" -O LFSPkg.zip
 unzip LFSPkg.zip
+
 cd $LFS/LFSSourceArchives/9.0/SYSTEM/
 sudo wget https://www.openssl.org/source/old/1.1.1/openssl-1.1.1c.tar.gz
 echo "==========Stage 1/4 completed========================"
 sleep 5
 echo "==========Entering into chroot stage =============="
 echo "==========Stage 2==============================="
+
 cd $LFS/LFSScripts
 sudo ./Chroot system <<"EOT"
 cd /LFSSourceArchives/9.0/SYSTEM/
@@ -127,7 +129,6 @@ make install                                          &&
 
 install-info --dir-file=/usr/share/info/dir           \
              /usr/share/info/gpm.info                 &&
-
 ln -sfv libgpm.so.2.1.0 /usr/lib/libgpm.so            &&
 install -v -m644 conf/gpm-root.conf /etc              &&
 
@@ -136,13 +137,15 @@ install -v -m644    doc/support/*                     \
                     /usr/share/doc/gpm-1.20.7/support &&
 install -v -m644    doc/{FAQ,HACK_GPM,README*}        \
                     /usr/share/doc/gpm-1.20.7
-		   
-
+		    
 EOT
+
 echo "===========Stage 2/4 Completed========="
 sleep 5
+
 echo "============kernel install stage======="
 echo "===========Stage 3=================="
+
 cd /
 sudo rm /tools
 sudo rm -rf $LFS/tools
@@ -155,19 +158,31 @@ wget https://ftp.gnu.org/gnu/cpio/cpio-2.13.tar.bz2
 tar -xf cpio-2.13
 make -J1||make
 make install
+
 cd /LFSPkgBuildScripts/kernel
 sed -i 's/cp $KERNELCONFIG .config/#cp $KERNELCONFIG .config/g' kernel.LFSBuild
+
 ./kernel.LFSBuild install
 ./firmware.LFSBuild install
+
 grub-install /dev/sda
+
 EOT
+
 echo "=========Stage 3/4 completed======"
+
 sleep 5
+
 echo "=====grub editing==========="
+
 echo "==========Stage 4============"
+
 cd /
 sudo update-grub
 sudo cp /boot/grub/grub.cfg /mnt/LFS/boot/grub
+
 echo ======grub editing completed"
+
 echo "=======stage 4/4 completed===="
+
 echo "Please umount /mnt/LFS and reboot the server and check"
