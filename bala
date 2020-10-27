@@ -3,7 +3,7 @@
 
 #If compiling on raspberian you need to install some extra files like so:
 sudo apt-get update
-sudo apt-get install bison gawk m4 texinfo
+sudo apt-get install bison gawk m4 texinfo -y
 #Also make sure /bin/sh points to /bin/bash
 
 #Get the build scripts and helper scripts from:
@@ -50,6 +50,7 @@ sudo wget https://ftp.gnu.org/gnu/mpfr/mpfr-4.0.2.tar.xz
 sudo mv mpfr-4.0.2.tar.xz /mnt/LFS/LFSSourceArchives/9.0/SYSTEM/
 
 sudo git clone https://github.com/balaspidy/LFS.git
+
 sleep 5
 cd $bbb
 sudo cp BuildTools-SystemD $LFS/LFSScripts
@@ -93,7 +94,7 @@ unzip LFSPkg.zip
 cd $LFS/LFSSourceArchives/9.0/SYSTEM/
 sudo wget https://www.openssl.org/source/old/1.1.1/openssl-1.1.1c.tar.gz
 echo "==========Stage 1/4 completed========================"
-sleep 2
+sleep 5
 echo "==========Entering into chroot stage =============="
 echo "==========Stage 2==============================="
 cd $LFS/LFSScripts
@@ -108,8 +109,10 @@ make install
 cd /LFSPkgBuildScripts/admin/LFSPkg
 echo "I" |BOOTSTRAP=1 ./LFSPkg.LFSBuild install
 echo "y" |lfspkg --setup
+
 cd /LFSPkgBuildScripts/system/system-meta
 ./system-meta.LFSBuild install
+
 cd /
 wget http://anduin.linuxfromscratch.org/BLFS/gpm/gpm-1.20.7.tar.bz2
 wget http://www.linuxfromscratch.org/patches/blfs/svn/gpm-1.20.7-consolidated-1.patch
@@ -137,13 +140,15 @@ install -v -m644    doc/{FAQ,HACK_GPM,README*}        \
 
 EOT
 echo "===========Stage 2/4 Completed========="
-sleep 2
+sleep 5
 echo "============kernel install stage======="
 echo "===========Stage 3=================="
 cd /
 sudo rm /tools
 sudo rm -rf $LFS/tools
+
 cd /mnt/LFS/LFSScripts/
+
 sudo ./Chroot <<"EOT"
 cd /
 wget https://ftp.gnu.org/gnu/cpio/cpio-2.13.tar.bz2
@@ -157,7 +162,7 @@ sed -i 's/cp $KERNELCONFIG .config/#cp $KERNELCONFIG .config/g' kernel.LFSBuild
 grub-install /dev/sda
 EOT
 echo "=========Stage 3/4 completed======"
-sleep 2
+sleep 5
 echo "=====grub editing==========="
 echo "==========Stage 4============"
 cd /
