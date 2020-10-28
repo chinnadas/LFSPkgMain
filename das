@@ -3,7 +3,7 @@
 
 #If compiling on raspberian you need to install some extra files like so:
 sudo apt-get update
-sudo apt-get install bison gawk m4 texinfo -y
+sudo apt-get install bison gawk m4 texinfo
 #Also make sure /bin/sh points to /bin/bash
 
 #Get the build scripts and helper scripts from:
@@ -30,7 +30,7 @@ export KERNELVERSION
 export USESYSTEMD
 bbb=`pwd`
 cd $LFS
-sudo wget https://ftp.gnu.org/gnu/cpio/cpio-2.13.tar.bz2
+sudo wget wget https://ftp.gnu.org/gnu/cpio/cpio-2.13.tar.bz2
 sudo git clone https://github.com/KeithDHedger/LFSPkgBuilds.git
 
 #Own the files:
@@ -45,10 +45,9 @@ cd LFSScripts
 
 rm -rf BuildTools-SystemD
 
-sudo git clone https://github.com/chinnadas/LFSPkgMain.git
-
+sudo git clone https://github.com/balaspidy/LFS.git
 sleep 5
-cd LFSPkgMain
+cd $bbb
 sudo cp BuildTools-SystemD $LFS/LFSScripts
 sudo cp  system-meta.LFSBuild /mnt/LFS/LFSPkgBuildScripts/system/system-meta/system-systemd-meta.LFSBuild
 sudo chmod 777 /mnt/LFS/LFSPkgBuildScripts/system/system-meta/system-systemd-meta.LFSBuild
@@ -60,11 +59,7 @@ sudo chmod 755 BuildTools-SystemD
 sleep 3
 echo "=================Building Tools for Systemd============"
 echo "=================Stage 1======================="
-
-
-
 ./BuildTools-SystemD
-
 
 sleep 5
 
@@ -75,6 +70,7 @@ if [ "X$EXTFOLDER" != "X" ];then
 	sudo mount --bind $EXTFOLDER/${BUILTPACKAGES} $LFS/${BUILTPACKAGES}
 	sudo mount --bind $EXTFOLDER/${SOURCEARCHIVES} $LFS/${SOURCEARCHIVES}
 fi
+
 
 sudo ./BuildFileSystem-SystemD
 
@@ -90,14 +86,12 @@ ln -sv ../SYSTEM/linux-$KERNELVERSION.tar.xz .
 cd $LFS/LFSPkgBuildScripts/admin/LFSPkg
 wget -c --no-check-certificate "https://github.com/KeithDHedger/LFSPkg/archive/master.zip" -O LFSPkg.zip
 unzip LFSPkg.zip
-
 cd $LFS/LFSSourceArchives/9.0/SYSTEM/
 sudo wget https://www.openssl.org/source/old/1.1.1/openssl-1.1.1c.tar.gz
 echo "==========Stage 1/4 completed========================"
-sleep 5
+sleep 2
 echo "==========Entering into chroot stage =============="
 echo "==========Stage 2==============================="
-
 cd $LFS/LFSScripts
 sudo ./Chroot system <<"EOT"
 cd /LFSSourceArchives/9.0/SYSTEM/
@@ -110,10 +104,8 @@ make install
 cd /LFSPkgBuildScripts/admin/LFSPkg
 echo "I" |BOOTSTRAP=1 ./LFSPkg.LFSBuild install
 echo "y" |lfspkg --setup
-
 cd /LFSPkgBuildScripts/system/system-meta
 ./system-meta.LFSBuild install
-
 cd /
 wget http://anduin.linuxfromscratch.org/BLFS/gpm/gpm-1.20.7.tar.bz2
 wget http://www.linuxfromscratch.org/patches/blfs/svn/gpm-1.20.7-consolidated-1.patch
@@ -128,59 +120,45 @@ make install                                          &&
 
 install-info --dir-file=/usr/share/info/dir           \
              /usr/share/info/gpm.info                 &&
+
 ln -sfv libgpm.so.2.1.0 /usr/lib/libgpm.so            &&
 install -v -m644 conf/gpm-root.conf /etc              &&
+
 install -v -m755 -d /usr/share/doc/gpm-1.20.7/support &&
 install -v -m644    doc/support/*                     \
                     /usr/share/doc/gpm-1.20.7/support &&
 install -v -m644    doc/{FAQ,HACK_GPM,README*}        \
                     /usr/share/doc/gpm-1.20.7
-		    
+		   
+
 EOT
-
 echo "===========Stage 2/4 Completed========="
-sleep 5
-
+sleep 2
 echo "============kernel install stage======="
 echo "===========Stage 3=================="
-
 cd /
 sudo rm /tools
 sudo rm -rf $LFS/tools
-
 cd /mnt/LFS/LFSScripts/
-
 sudo ./Chroot <<"EOT"
 cd /
 wget https://ftp.gnu.org/gnu/cpio/cpio-2.13.tar.bz2
 tar -xf cpio-2.13
 make -J1||make
 make install
-
 cd /LFSPkgBuildScripts/kernel
 sed -i 's/cp $KERNELCONFIG .config/#cp $KERNELCONFIG .config/g' kernel.LFSBuild
-
 ./kernel.LFSBuild install
 ./firmware.LFSBuild install
-
 grub-install /dev/sda
-
 EOT
-
 echo "=========Stage 3/4 completed======"
-
-sleep 5
-
+sleep 2
 echo "=====grub editing==========="
-
 echo "==========Stage 4============"
-
 cd /
 sudo update-grub
 sudo cp /boot/grub/grub.cfg /mnt/LFS/boot/grub
-
 echo ======grub editing completed"
-
 echo "=======stage 4/4 completed===="
-
 echo "Please umount /mnt/LFS and reboot the server and check"
