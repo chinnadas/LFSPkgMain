@@ -6,11 +6,11 @@ sudo apt-get update
 sudo apt-get install bison gawk  gcc g++ make m4 texinfo git vim -y
 
 #Also make sure /bin/sh points to /bin/bash
-rm /bin/sh
-ln -s /bin/bash /bin/sh
+sudo rm /bin/sh
+sudo ln -s /bin/bash /bin/sh
 
-rm /usr/bin/awk 
-ln -s /usr/bin/gawk /usr/bin/awk
+sudo rm /usr/bin/awk 
+sudo ln -s /usr/bin/gawk /usr/bin/awk
 
 
 #Get the build scripts and helper scripts from:
@@ -44,8 +44,8 @@ sudo git clone https://github.com/KeithDHedger/LFSPkgBuilds.git
 #Own the files:
 sudo chown -R $USER:$USER /mnt/LFS
 sudo chown -R $USER:$USER $LFS/LFSPkgBuilds
-ln -sv LFSPkgBuilds/LFSPkgBuildScripts $LFS/LFSPkgBuildScripts
-ln -sv LFSPkgBuilds/LFSScripts $LFS/LFSScripts
+sudo ln -sv LFSPkgBuilds/LFSPkgBuildScripts $LFS/LFSPkgBuildScripts
+sudo ln -sv LFSPkgBuilds/LFSScripts $LFS/LFSScripts
 
 sleep 2
 cd LFSScripts
@@ -93,7 +93,7 @@ sudo ./BuildFileSystem-SystemD
 
 sudo chown -R $USER:$USER $LFS/LFSPkgBuilds $LFS/LFSSourceArchives/$LFSVERSION $LFS/LFSBuiltPackages/$LFSVERSION
 
-chmod -R 755 $LFS/LFSSourceArchives/$LFSVERSION $LFS/LFSBuiltPackages/$LFSVERSION
+sudo chmod -R 755 $LFS/LFSSourceArchives/$LFSVERSION $LFS/LFSBuiltPackages/$LFSVERSION
 
 mkdir  $LFS/LFSSourceArchives/$LFSVERSION/KERNEL
 cd $LFS/LFSSourceArchives/$LFSVERSION/KERNEL
