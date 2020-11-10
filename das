@@ -3,8 +3,15 @@
 
 #If compiling on raspberian you need to install some extra files like so:
 sudo apt-get update
-sudo apt-get install bison gawk m4 texinfo
+sudo apt-get install bison gawk  gcc g++ make m4 texinfo git vim -y
+
 #Also make sure /bin/sh points to /bin/bash
+rm /bin/sh
+ln -s /bin/bash /bin/sh
+
+rm /usr/bin/awk 
+ln -s /usr/bin/gawk /usr/bin/awk
+
 
 #Get the build scripts and helper scripts from:
 #https://github.com/KeithDHedger/LFSPkgBuilds
@@ -31,6 +38,7 @@ export USESYSTEMD
 bbb=`pwd`
 cd $LFS
 sudo wget wget https://ftp.gnu.org/gnu/cpio/cpio-2.13.tar.bz2
+
 sudo git clone https://github.com/KeithDHedger/LFSPkgBuilds.git
 
 #Own the files:
@@ -42,16 +50,23 @@ ln -sv LFSPkgBuilds/LFSScripts $LFS/LFSScripts
 sleep 2
 cd LFSScripts
 ./LFSSetUp
+./ShowSystemData
 
 rm -rf BuildTools-SystemD
 
-sudo git clone https://github.com/balaspidy/LFS.git
+sudo git clone https://github.com/chinnadas/LFSPkgMain.git
+
 sleep 5
 cd $bbb
+
 sudo cp BuildTools-SystemD $LFS/LFSScripts
+
 sudo cp  system-meta.LFSBuild /mnt/LFS/LFSPkgBuildScripts/system/system-meta/system-systemd-meta.LFSBuild
+
 sudo chmod 777 /mnt/LFS/LFSPkgBuildScripts/system/system-meta/system-systemd-meta.LFSBuild
+
 cd $LFS/LFSScripts/
+
 sudo chown -R $USER:$USER BuildTools-SystemD
 sudo chmod 755 BuildTools-SystemD
 
@@ -59,6 +74,7 @@ sudo chmod 755 BuildTools-SystemD
 sleep 3
 echo "=================Building Tools for Systemd============"
 echo "=================Stage 1======================="
+
 ./BuildTools-SystemD
 
 sleep 5
@@ -86,14 +102,21 @@ ln -sv ../SYSTEM/linux-$KERNELVERSION.tar.xz .
 cd $LFS/LFSPkgBuildScripts/admin/LFSPkg
 wget -c --no-check-certificate "https://github.com/KeithDHedger/LFSPkg/archive/master.zip" -O LFSPkg.zip
 unzip LFSPkg.zip
+
 cd $LFS/LFSSourceArchives/9.0/SYSTEM/
 sudo wget https://www.openssl.org/source/old/1.1.1/openssl-1.1.1c.tar.gz
+
 echo "==========Stage 1/4 completed========================"
 sleep 2
+
 echo "==========Entering into chroot stage =============="
+
 echo "==========Stage 2==============================="
 cd $LFS/LFSScripts
-sudo ./Chroot system <<"EOT"
+
+
+sudo ./Chroot
+
 cd /LFSSourceArchives/9.0/SYSTEM/
 tar -xf bison-3.4.1.tar.xz
 cd bison-3.4.1
@@ -104,8 +127,10 @@ make install
 cd /LFSPkgBuildScripts/admin/LFSPkg
 echo "I" |BOOTSTRAP=1 ./LFSPkg.LFSBuild install
 echo "y" |lfspkg --setup
+
 cd /LFSPkgBuildScripts/system/system-meta
 ./system-meta.LFSBuild install
+
 cd /
 wget http://anduin.linuxfromscratch.org/BLFS/gpm/gpm-1.20.7.tar.bz2
 wget http://www.linuxfromscratch.org/patches/blfs/svn/gpm-1.20.7-consolidated-1.patch
@@ -131,34 +156,64 @@ install -v -m644    doc/{FAQ,HACK_GPM,README*}        \
                     /usr/share/doc/gpm-1.20.7
 		   
 
-EOT
 echo "===========Stage 2/4 Completed========="
+
 sleep 2
+
 echo "============kernel install stage======="
+
 echo "===========Stage 3=================="
+
+exit
+
 cd /
 sudo rm /tools
 sudo rm -rf $LFS/tools
 cd /mnt/LFS/LFSScripts/
-sudo ./Chroot <<"EOT"
+sudo ./Chroot 
 cd /
 wget https://ftp.gnu.org/gnu/cpio/cpio-2.13.tar.bz2
-tar -xf cpio-2.13
+tar -xvf cpio-2.13.tar.bz2
+cd cpio-2.13
 make -J1||make
 make install
+
 cd /LFSPkgBuildScripts/kernel
+
 sed -i 's/cp $KERNELCONFIG .config/#cp $KERNELCONFIG .config/g' kernel.LFSBuild
 ./kernel.LFSBuild install
 ./firmware.LFSBuild install
+
 grub-install /dev/sda
-EOT
-echo "=========Stage 3/4 completed======"
-sleep 2
+
 echo "=====grub editing==========="
+
 echo "==========Stage 4============"
-cd /
-sudo update-grub
-sudo cp /boot/grub/grub.cfg /mnt/LFS/boot/grub
+
+cat > /boot/grub/grub.cfg << "EOF"
+# Begin /boot/grub/grub.cfg
+set default=0
+set timeout=30
+
+insmod ext2
+set root=(hd0,7)
+
+menuentry "GNU/Linux, yantra" {
+	linux /boot/vmlinuz-$KERNELVERSION root=/dev/sda7 ro
+}
+EOF
+
+exit
+
+echo "=========Stage 3/4 completed======"
+
+sleep 2
+
 echo ======grub editing completed"
+
+sudo update-grub
+
 echo "=======stage 4/4 completed===="
-echo "Please umount /mnt/LFS and reboot the server and check"
+
+sudo umount $LFS
+
