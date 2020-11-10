@@ -11,17 +11,6 @@ sudo ln -s /bin/bash /bin/sh
 
 sudo rm /usr/bin/awk 
 sudo ln -s /usr/bin/gawk /usr/bin/awk
-sudo -E su
-cat > /usr/bin/yacc << "EOF"
-#!/bin/sh
-# Begin /usr/bin/yacc
-
-/usr/bin/bison -y $*
-
-# End /usr/bin/yacc
-EOF
-sudo chmod 755 /usr/bin/yacc
-exit
 
 
 #Get the build scripts and helper scripts from:
