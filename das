@@ -126,8 +126,7 @@ echo "==========Stage 2==============================="
 cd $LFS/LFSScripts
 
 
-sudo ./Chroot
-
+sudo ./Chroot system <<"EOT"
 cd /LFSSourceArchives/9.0/SYSTEM/
 tar -xf bison-3.4.1.tar.xz
 cd bison-3.4.1
@@ -138,6 +137,35 @@ make install
 cd /LFSPkgBuildScripts/admin/LFSPkg
 echo "I" |BOOTSTRAP=1 ./LFSPkg.LFSBuild install
 echo "y" |lfspkg --setup
+cd /LFSPkgBuildScripts/system/system-meta
+./system-meta.LFSBuild install
+cd /
+wget http://anduin.linuxfromscratch.org/BLFS/gpm/gpm-1.20.7.tar.bz2
+wget http://www.linuxfromscratch.org/patches/blfs/svn/gpm-1.20.7-consolidated-1.patch
+tar -xf gpm-1.20.7.tar.bz2
+cd gpm-1.20.7
+patch -Np1 -i ../gpm-1.20.7-consolidated-1.patch &&
+./autogen.sh                                     &&
+./configure --prefix=/usr --sysconfdir=/etc      &&
+make
+
+make install                                          &&
+
+install-info --dir-file=/usr/share/info/dir           \
+             /usr/share/info/gpm.info                 &&
+
+ln -sfv libgpm.so.2.1.0 /usr/lib/libgpm.so            &&
+install -v -m644 conf/gpm-root.conf /etc              &&
+
+install -v -m755 -d /usr/share/doc/gpm-1.20.7/support &&
+install -v -m644    doc/support/*                     \
+                    /usr/share/doc/gpm-1.20.7/support &&
+install -v -m644    doc/{FAQ,HACK_GPM,README*}        \
+                    /usr/share/doc/gpm-1.20.7	   
+
+EOT
+
+
 
 cd /LFSPkgBuildScripts/system/system-meta
 ./system-meta.LFSBuild install
@@ -181,20 +209,19 @@ cd /
 sudo rm /tools
 sudo rm -rf $LFS/tools
 cd /mnt/LFS/LFSScripts/
-sudo ./Chroot 
+
+sudo ./Chroot <<"EOT"
 cd /
 wget https://ftp.gnu.org/gnu/cpio/cpio-2.13.tar.bz2
-tar -xvf cpio-2.13.tar.bz2
-cd cpio-2.13
+tar -xf cpio-2.13
 make -J1||make
 make install
-
 cd /LFSPkgBuildScripts/kernel
-
 sed -i 's/cp $KERNELCONFIG .config/#cp $KERNELCONFIG .config/g' kernel.LFSBuild
 ./kernel.LFSBuild install
 ./firmware.LFSBuild install
-
+grub-install /dev/sda
+EOT
 grub-install /dev/sda
 
 echo "=====grub editing==========="
