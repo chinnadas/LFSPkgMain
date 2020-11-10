@@ -12,6 +12,16 @@ sudo ln -s /bin/bash /bin/sh
 sudo rm /usr/bin/awk 
 sudo ln -s /usr/bin/gawk /usr/bin/awk
 
+cat > /usr/bin/yacc << "EOF"
+#!/bin/sh
+# Begin /usr/bin/yacc
+
+/usr/bin/bison -y $*
+
+# End /usr/bin/yacc
+EOF
+sudo chmod 755 /usr/bin/yacc
+
 
 #Get the build scripts and helper scripts from:
 #https://github.com/KeithDHedger/LFSPkgBuilds
