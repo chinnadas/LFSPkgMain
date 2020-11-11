@@ -129,8 +129,8 @@ echo "y" |lfspkg --setup
 cd /LFSPkgBuildScripts/system/system-meta
 ./system-meta.LFSBuild install
 cd /
-wget http://anduin.linuxfromscratch.org/BLFS/gpm/gpm-1.20.7.tar.bz2
-wget http://www.linuxfromscratch.org/patches/blfs/svn/gpm-1.20.7-consolidated-1.patch
+wget http://anduin.linuxfromscratch.org/BLFS/gpm/gpm-1.20.7.tar.bz2 --no-check-certificate
+wget http://www.linuxfromscratch.org/patches/blfs/svn/gpm-1.20.7-consolidated-1.patch --no-check-certificate
 tar -xf gpm-1.20.7.tar.bz2
 cd gpm-1.20.7
 patch -Np1 -i ../gpm-1.20.7-consolidated-1.patch &&
@@ -151,64 +151,40 @@ install -v -m644    doc/support/*                     \
                     /usr/share/doc/gpm-1.20.7/support &&
 install -v -m644    doc/{FAQ,HACK_GPM,README*}        \
                     /usr/share/doc/gpm-1.20.7	   
-
 EOT
 
-
-
-cd /LFSPkgBuildScripts/system/system-meta
-./system-meta.LFSBuild install
-
-cd /
-wget http://anduin.linuxfromscratch.org/BLFS/gpm/gpm-1.20.7.tar.bz2
-wget http://www.linuxfromscratch.org/patches/blfs/svn/gpm-1.20.7-consolidated-1.patch
-tar -xf gpm-1.20.7.tar.bz2
-cd gpm-1.20.7
-patch -Np1 -i ../gpm-1.20.7-consolidated-1.patch &&
-./autogen.sh                                     &&
-./configure --prefix=/usr --sysconfdir=/etc      &&
-make
-
-make install                                          &&
-
-install-info --dir-file=/usr/share/info/dir           \
-             /usr/share/info/gpm.info                 &&
-
-ln -sfv libgpm.so.2.1.0 /usr/lib/libgpm.so            &&
-install -v -m644 conf/gpm-root.conf /etc              &&
-
-install -v -m755 -d /usr/share/doc/gpm-1.20.7/support &&
-install -v -m644    doc/support/*                     \
-                    /usr/share/doc/gpm-1.20.7/support &&
-install -v -m644    doc/{FAQ,HACK_GPM,README*}        \
-                    /usr/share/doc/gpm-1.20.7
-		   
-
-echo "===========Stage 2/4 Completed========="
-
-sleep 2
-
-echo "============kernel install stage======="
-
-echo "===========Stage 3=================="
 
 cd /
 sudo rm /tools
 sudo rm -rf $LFS/tools
 cd /mnt/LFS/LFSScripts/
 
-sudo ./Chroot <<"EOT"
+
+sudo ./Chroot <<"EOT" 
 cd /
 wget https://ftp.gnu.org/gnu/cpio/cpio-2.13.tar.bz2
-tar -xf cpio-2.13
+tar -xvf cpio-2.13.tar.bz2
+cd cpio-2.13
+./configure --prefix=/usr
 make -J1||make
 make install
+
+sleep 2
+echo "============kernelinstall stage please install kernel manually with scripts==================="
+
+cd /LFSPkgBuildScripts/kernel
+EOT
+
+sleep 2
+echo "============Stage 3===================="
+echo "============kernel install stage======="
+
+echo "============before kernel install stages completed  please install kernel manually with build scripts================="
+
 cd /LFSPkgBuildScripts/kernel
 sed -i 's/cp $KERNELCONFIG .config/#cp $KERNELCONFIG .config/g' kernel.LFSBuild
 ./kernel.LFSBuild install
 ./firmware.LFSBuild install
-grub-install /dev/sda
-EOT
 grub-install /dev/sda
 
 echo "=====grub editing==========="
@@ -241,4 +217,3 @@ sudo update-grub
 echo "=======stage 4/4 completed===="
 
 sudo umount $LFS
-
