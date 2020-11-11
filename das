@@ -192,8 +192,6 @@ echo "============kernel install stage======="
 
 echo "===========Stage 3=================="
 
-exit
-
 cd /
 sudo rm /tools
 sudo rm -rf $LFS/tools
