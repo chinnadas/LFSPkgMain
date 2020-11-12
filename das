@@ -200,7 +200,7 @@ insmod ext2
 set root=(hd0,7)
 
 menuentry "GNU/Linux, yantra" {
-	linux /boot/vmlinuz-$KERNELVERSION root=/dev/sda7 ro
+	linux /boot/vmlinuz-5.2.8 root=/dev/sda7 ro
 }
 EOF
 
